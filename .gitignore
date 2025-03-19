@@ -1,0 +1,15 @@
+# Ignore virtual environment directories
+venv/
+env/
+
+# Ignore API key files
+*.apikey
+*.key
+*.secret
+*.env
+
+# Other common ignores
+*.pyc
+__pycache__/
+*.log
+.DS_Store
