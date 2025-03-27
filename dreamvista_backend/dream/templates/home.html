@@ -4,30 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DreamVista - AI Dream Interpretation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body>
-    <h1>DreamVista - AI-Powered Dream Interpretation</h1>
-    <form method="POST">
-        {% csrf_token %}
-        <textarea name="dream_text" placeholder="Describe your dream..." required></textarea>
-        <button type="submit">Analyze</button>
-    </form>
-    {% if sentiment %}
-    <h3>Dream Sentiment:</h3>
-    <p><strong>Sentiment:</strong> {{ sentiment }}</p>
-    {% endif %}
+<body class="bg-light">
 
-    {% if category %}
-    <h3>Dream Category:</h3>
-    <p><strong>Category:</strong> {{ category }}</p>
-    {% endif %}
+    <div class="container mt-5">
+        <h1 class="text-center text-primary">🌙 DreamVista - AI Dream Interpretation 🔮</h1>
 
+        <div class="card shadow-lg p-4 mt-4">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="dream_text" class="form-label">Describe your dream:</label>
+                    <textarea name="dream_text" id="dream_text" class="form-control" rows="4" required placeholder="Type your dream here..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Analyze Dream</button>
+            </form>
+        </div>
 
+        {% if interpretation %}
+            <div class="mt-4 p-4 bg-white shadow-lg rounded">
+                <h3>Dream Analysis Results:</h3>
+                <p><strong>Your Dream:</strong> {{ dream_text }}</p>
+                <p><strong>AI Interpretation:</strong> {{ interpretation }}</p>
+                <p><strong>Sentiment:</strong> <span class="badge bg-info">{{ sentiment }}</span></p>
+                <p><strong>Category:</strong> <span class="badge bg-success">{{ category }}</span></p>
+            </div>
+        {% endif %}
+    </div>
 
-    {% if interpretation %}
-        <h2>Dream Interpretation:</h2>
-        <p><strong>Your Dream:</strong> {{ dream_text }}</p>
-        <p><strong>AI Interpretation:</strong> {{ interpretation }}</p>
-    {% endif %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
