@@ -12,6 +12,11 @@
         <textarea name="dream_text" placeholder="Describe your dream..." required></textarea>
         <button type="submit">Analyze</button>
     </form>
+    {% if sentiment %}
+    <h3>Dream Sentiment:</h3>
+    <p><strong>Sentiment:</strong> {{ sentiment }}</p>
+    {% endif %}
+
 
     {% if interpretation %}
         <h2>Dream Interpretation:</h2>
