@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DreamVista - AI Dream Interpretation</title>
+</head>
+<body>
+    <h1>DreamVista - AI-Powered Dream Interpretation</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <textarea name="dream_text" placeholder="Describe your dream..." required></textarea>
+        <button type="submit">Analyze</button>
+    </form>
+
+    {% if interpretation %}
+        <h2>Dream Interpretation:</h2>
+        <p><strong>Your Dream:</strong> {{ dream_text }}</p>
+        <p><strong>AI Interpretation:</strong> {{ interpretation }}</p>
+    {% endif %}
+</body>
+</html>
