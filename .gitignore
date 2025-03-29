@@ -11,5 +11,6 @@ env/
 # Other common ignores
 *.pyc
 __pycache__/
+config.py
 *.log
 .DS_Store
