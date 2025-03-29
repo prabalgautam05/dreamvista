@@ -47,17 +47,19 @@ def categorize_dream(text):
         return "Uncategorized 💤"
 
 def extract_structured_interpretation(text):
-    """Extracts structured interpretation with element-wise breakdown."""
+    """Extracts structured interpretation with proper formatting."""
     paragraphs = text.split('. ')  # Split into sentences
     structured_output = ""
     current_element = ""
 
     for sentence in paragraphs:
         sentence = sentence.strip()
+
         if ":" in sentence:  # Detect dream element (e.g., "The Witch:")
-            current_element = f"**{sentence.split(':')[0]}:**\n"
-            structured_output += f"<br><b>{sentence.split(':')[0]}</b><br>"
-        elif current_element and ("suggests" in sentence or "symbolizes" in sentence or "represents" in sentence):
+            current_element = sentence.split(":")[0].strip()
+            structured_output += f"<br><b>{current_element}</b><br>"  # Proper bold element title
+
+        elif current_element:  # Only add bullet points if an element is set
             structured_output += f"• {sentence.strip()}<br>"
 
     return structured_output
