@@ -69,6 +69,11 @@
     >
       🌙 DreamVista - AI Dream Interpretation 🔮
     </h1>
+    <style>
+      body:not(.dark-mode) h1 {
+        -webkit-text-stroke: 1px black; /* Black outline for light mode */
+      }
+    </style>
 
     <div class="card shadow-lg p-4 mt-4">
       <form method="POST">
@@ -81,7 +86,7 @@
             class="form-control"
             rows="4"
             required
-            placeholder="Type your dream here..."
+            placeholder="Start writing your dream with (In my dream/ I had a dream/ I saw a Nightmare...)"
           ></textarea>
         </div>
         <button type="submit" class="btn btn-primary w-100">Analyze Dream</button>
@@ -142,12 +147,13 @@
         <!-- Right Column -->
         <div class="col-md-6">
           <!-- AI Interpretation Card -->
-          <div class="card shadow p-3">
-            <h4 class="text-dark">🤖 AI Interpretation</h4>
-            <div class="text-info">
-              {{ interpretation | safe }} <!-- Allows HTML rendering -->
-            </div>
-          </div>
+<div class="card shadow p-3">
+    <h4 class="text-dark">🤖 AI Interpretation</h4>
+    <div class="text-info" style="white-space: pre-wrap; font-family: Arial, sans-serif;">
+        {{ interpretation | safe }}
+    </div>
+</div>
+
         </div>
       </div>
     {% endif %}
