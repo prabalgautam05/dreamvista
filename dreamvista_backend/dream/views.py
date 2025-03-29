@@ -64,13 +64,13 @@ def extract_structured_interpretation(text):
 
     return structured_output
 
-def home(request):
+def index(request):
     """Handles dream input, AI interpretation, sentiment analysis, and categorization."""
     if request.method == 'POST':
         dream_text = request.POST.get('dream_text', '').strip()
 
         if not is_valid_dream(dream_text):
-            return render(request, 'home.html', {
+            return render(request, 'index.html', {
                 'error': "❌ Invalid input! Please describe a dream, not general topics."
             })
 
@@ -79,7 +79,7 @@ def home(request):
         sentiment, sentiment_score = analyze_sentiment(dream_text)
         category = categorize_dream(dream_text)
 
-        return render(request, 'home.html', {
+        return render(request, 'index.html', {
             'dream_text': dream_text,
             'interpretation': formatted_interpretation,  # Clean, structured output
             'sentiment': sentiment,
@@ -87,4 +87,4 @@ def home(request):
             'category': category
         })
 
-    return render(request, 'home.html')
+    return render(request, 'index.html')
