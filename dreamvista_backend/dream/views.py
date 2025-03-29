@@ -1,70 +1,85 @@
+import re
 from django.shortcuts import render
 from .gemini_api import interpret_dream
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-# Initialize VADER Sentiment Analyzer
 analyzer = SentimentIntensityAnalyzer()
 
-def analyze_sentiment(text):
-    """Determine sentiment polarity using VADER."""
-    scores = analyzer.polarity_scores(text)
-    polarity = scores['compound']  # Compound score represents overall sentiment
+# 🚫 Restricted non-dream-related keywords
+FORBIDDEN_WORDS = [
+    "news", "politics", "technology", "sports", "recipe", "weather", "tutorial",
+    "how to", "current events", "stock market", "business trends"
+]
 
-    print(f"VADER Sentiment Score: {polarity}")  # Debugging
-
-    if polarity >= 0.05:
-        return "Positive 😊"
-    elif polarity <= -0.05:
-        return "Negative 😟"
-    else:
-        return "Neutral 😐"
-
-
-def categorize_dream(dream_text):
-    """Categorize the dream into types."""
+def is_valid_dream(dream_text):
+    """Validate if input is a real dream description."""
     dream_text = dream_text.lower()
 
-    print(f"Analyzing Dream Category for: {dream_text}")  # Debugging
+    # 🚨 Block queries with forbidden words
+    if any(word in dream_text for word in FORBIDDEN_WORDS):
+        return False
 
-    nightmare_keywords = [
-        "scary", "fear", "chased", "monster", "dark", "haunted", "death", "screaming", 
-        "witch", "ghost", "demon", "attack", "murder", "kill", "shadow", "curse", "blood"
-    ]
-    lucid_keywords = [
-        "flying", "aware", "control", "lucid", "dream control", "awake in dream", "floating",
-        "controlling", "astral projection", "seeing yourself"
-    ]
-    symbolic_keywords = [
-        "symbol", "mystery", "hidden message", "prophetic", "spiritual", "sign", "premonition",
-        "fortune", "vision", "prediction"
-    ]
+    # 💤 Ensure dream-related context
+    if not re.search(r"\bdream\b|\bsleep\b|\bdreamt\b|\bnight\b", dream_text):
+        return False
+    
+    return True
 
-    if any(word in dream_text for word in nightmare_keywords):
+def analyze_sentiment(text):
+    """Perform sentiment analysis using Vader."""
+    score = analyzer.polarity_scores(text)['compound']
+    
+    if score >= 0.05:
+        return "Positive 😊", 100  # Full progress bar
+    elif score <= -0.05:
+        return "Negative 😟", 20  # Small progress bar
+    else:
+        return "Neutral 😐", 50  # Mid-sized progress bar
+
+def categorize_dream(text):
+    """Basic categorization based on keywords."""
+    text = text.lower()
+    if "chased" in text or "attacked" in text or "witch" in text:
         return "Nightmare 😱"
-    elif any(word in dream_text for word in lucid_keywords):
+    elif "flying" in text or "controlling" in text:
         return "Lucid Dream ✨"
-    elif any(word in dream_text for word in symbolic_keywords):
+    elif "ocean" in text or "animals" in text:
         return "Symbolic Dream 🔮"
     else:
         return "Uncategorized 💤"
 
+def format_interpretation(text):
+    """Break AI-generated interpretation into readable sub-paragraphs."""
+    sentences = text.split('. ')  # Split long text into sentences
+    formatted_text = ""
+
+    for sentence in sentences:
+        if len(sentence.strip()) > 0:
+            formatted_text += f"<p>✅ {sentence.strip()}.</p>\n"  # Wrap each sentence in a paragraph
+    
+    return formatted_text
+
 def home(request):
-    """Handle dream input, AI interpretation, sentiment, and categorization."""
+    """Handles dream input, AI interpretation, sentiment analysis, and categorization."""
     if request.method == 'POST':
         dream_text = request.POST.get('dream_text', '').strip()
 
-        if dream_text:
-            interpretation = interpret_dream(dream_text)
-            sentiment = analyze_sentiment(dream_text)
-            category = categorize_dream(dream_text)
-
-            print(f"Final Sentiment: {sentiment}, Category: {category}")  # Debugging
-
+        if not is_valid_dream(dream_text):
             return render(request, 'home.html', {
-                'dream_text': dream_text,
-                'interpretation': interpretation,
-                'sentiment': sentiment,
-                'category': category
+                'error': "❌ Invalid input! Please describe a dream, not general topics."
             })
+
+        interpretation = interpret_dream(dream_text)
+        formatted_interpretation = format_interpretation(interpretation)  # Apply structured formatting
+        sentiment, sentiment_score = analyze_sentiment(dream_text)
+        category = categorize_dream(dream_text)
+
+        return render(request, 'home.html', {
+            'dream_text': dream_text,
+            'interpretation': formatted_interpretation,  # Send formatted output
+            'sentiment': sentiment,
+            'sentiment_score': sentiment_score,
+            'category': category
+        })
 
     return render(request, 'home.html')

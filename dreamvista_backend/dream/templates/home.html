@@ -22,28 +22,56 @@
             </form>
         </div>
 
-        {% if interpretation %}
-            <div class="mt-4 p-4 bg-white shadow-lg rounded">
-                <h3 class="text-dark">Dream Analysis Results:</h3>
-                <p><strong>Your Dream:</strong> {{ dream_text }}</p>
-                
-                <div class="alert alert-info">
-                    <strong>AI Interpretation:</strong> {{ interpretation }}
-                </div>
-                
-                <div class="mt-3">
-                    <h4>Dream Insights:</h4>
-                    <p><strong>Sentiment:</strong> 
-                        <span class="badge {% if sentiment == 'Positive 😊' %}bg-success{% elif sentiment == 'Negative 😟' %}bg-danger{% else %}bg-secondary{% endif %}">
-                            {{ sentiment }}
-                        </span>
-                    </p>
+        {% if error %}
+            <div class="alert alert-danger mt-4 text-center">
+                {{ error }}
+            </div>
+        {% endif %}
 
-                    <p><strong>Category:</strong> 
-                        <span class="badge {% if category == 'Nightmare 😱' %}bg-dark{% elif category == 'Lucid Dream ✨' %}bg-primary{% elif category == 'Symbolic Dream 🔮' %}bg-warning{% else %}bg-secondary{% endif %}">
-                            {{ category }}
-                        </span>
-                    </p>
+        {% if interpretation %}
+            <div class="row mt-4">
+                <!-- Dream Text Card -->
+                <div class="col-md-6">
+                    <div class="card shadow p-3">
+                        <h4 class="text-dark">🌙 Your Dream</h4>
+                        <p class="text-muted">{{ dream_text }}</p>
+                    </div>
+                </div>
+
+                <!-- AI Interpretation Card -->
+<div class="col-md-6">
+    <div class="card shadow p-3">
+        <h4 class="text-dark">🤖 AI Interpretation</h4>
+        <div class="text-info">{{ interpretation | safe }}</div>  <!-- Allows HTML rendering -->
+    </div>
+</div>
+
+                <!-- Sentiment Analysis Card -->
+<div class="col-md-6">
+    <div class="card shadow p-3">
+        <h4 class="text-dark">📊 Sentiment Analysis</h4>
+        <div class="progress">
+            <div class="progress-bar 
+                {% if sentiment == 'Positive 😊' %}bg-success{% elif sentiment == 'Negative 😟' %}bg-danger{% else %}bg-secondary{% endif %}" 
+                role="progressbar" 
+                style="width: {{ sentiment_score }}%;">
+            </div>
+        </div>
+        <p class="mt-2"><strong>Sentiment:</strong> {{ sentiment }}</p>
+    </div>
+</div>
+
+
+                <!-- Dream Category Card -->
+                <div class="col-md-6">
+                    <div class="card shadow p-3">
+                        <h4 class="text-dark">📂 Dream Category</h4>
+                        <p>
+                            <span class="badge {% if category == 'Nightmare 😱' %}bg-dark{% elif category == 'Lucid Dream ✨' %}bg-primary{% elif category == 'Symbolic Dream 🔮' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                {{ category }}
+                            </span>
+                        </p>
+                    </div>
                 </div>
             </div>
         {% endif %}
