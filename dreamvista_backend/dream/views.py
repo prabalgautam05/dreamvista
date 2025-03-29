@@ -15,11 +15,9 @@ def is_valid_dream(dream_text):
     """Validate if input is a real dream description."""
     dream_text = dream_text.lower()
 
-    # 🚨 Block queries with forbidden words
     if any(word in dream_text for word in FORBIDDEN_WORDS):
         return False
 
-    # 💤 Ensure dream-related context
     if not re.search(r"\bdream\b|\bsleep\b|\bdreamt\b|\bnight\b", dream_text):
         return False
     
@@ -48,16 +46,18 @@ def categorize_dream(text):
     else:
         return "Uncategorized 💤"
 
-def format_interpretation(text):
-    """Break AI-generated interpretation into readable sub-paragraphs."""
-    sentences = text.split('. ')  # Split long text into sentences
-    formatted_text = ""
+def extract_meaning_and_suggestions(text):
+    """Extracts only the meaningful interpretation and key suggestions."""
+    paragraphs = text.split('. ')  # Split into sentences
+    key_points = []
 
-    for sentence in sentences:
-        if len(sentence.strip()) > 0:
-            formatted_text += f"<p>✅ {sentence.strip()}.</p>\n"  # Wrap each sentence in a paragraph
-    
-    return formatted_text
+    for sentence in paragraphs:
+        if "suggests" in sentence or "symbolizes" in sentence or "represents" in sentence:
+            key_points.append(f"🔹 {sentence.strip()}.")  # Meaning of the dream
+        elif "consider" in sentence or "important to" in sentence or "you should" in sentence:
+            key_points.append(f"✅ {sentence.strip()}.")  # Suggested actions
+
+    return "<br>".join(key_points)  # Display clean bullet points
 
 def home(request):
     """Handles dream input, AI interpretation, sentiment analysis, and categorization."""
@@ -70,13 +70,13 @@ def home(request):
             })
 
         interpretation = interpret_dream(dream_text)
-        formatted_interpretation = format_interpretation(interpretation)  # Apply structured formatting
+        formatted_interpretation = extract_meaning_and_suggestions(interpretation)  # Extract key insights
         sentiment, sentiment_score = analyze_sentiment(dream_text)
         category = categorize_dream(dream_text)
 
         return render(request, 'home.html', {
             'dream_text': dream_text,
-            'interpretation': formatted_interpretation,  # Send formatted output
+            'interpretation': formatted_interpretation,  # Clean, structured output
             'sentiment': sentiment,
             'sentiment_score': sentiment_score,
             'category': category
