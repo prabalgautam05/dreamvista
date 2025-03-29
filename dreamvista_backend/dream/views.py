@@ -46,18 +46,21 @@ def categorize_dream(text):
     else:
         return "Uncategorized 💤"
 
-def extract_meaning_and_suggestions(text):
-    """Extracts only the meaningful interpretation and key suggestions."""
+def extract_structured_interpretation(text):
+    """Extracts structured interpretation with element-wise breakdown."""
     paragraphs = text.split('. ')  # Split into sentences
-    key_points = []
+    structured_output = ""
+    current_element = ""
 
     for sentence in paragraphs:
-        if "suggests" in sentence or "symbolizes" in sentence or "represents" in sentence:
-            key_points.append(f"🔹 {sentence.strip()}.")  # Meaning of the dream
-        elif "consider" in sentence or "important to" in sentence or "you should" in sentence:
-            key_points.append(f"✅ {sentence.strip()}.")  # Suggested actions
+        sentence = sentence.strip()
+        if ":" in sentence:  # Detect dream element (e.g., "The Witch:")
+            current_element = f"**{sentence.split(':')[0]}:**\n"
+            structured_output += f"<br><b>{sentence.split(':')[0]}</b><br>"
+        elif current_element and ("suggests" in sentence or "symbolizes" in sentence or "represents" in sentence):
+            structured_output += f"• {sentence.strip()}<br>"
 
-    return "<br>".join(key_points)  # Display clean bullet points
+    return structured_output
 
 def home(request):
     """Handles dream input, AI interpretation, sentiment analysis, and categorization."""
@@ -70,7 +73,7 @@ def home(request):
             })
 
         interpretation = interpret_dream(dream_text)
-        formatted_interpretation = extract_meaning_and_suggestions(interpretation)  # Extract key insights
+        formatted_interpretation = extract_structured_interpretation(interpretation)  # Apply structured output
         sentiment, sentiment_score = analyze_sentiment(dream_text)
         category = categorize_dream(dream_text)
 
