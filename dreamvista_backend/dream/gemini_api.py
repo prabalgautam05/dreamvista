@@ -1,5 +1,5 @@
 import google.generativeai as genai
-from dreamvista_backend.dreamvista_backend.config import GEMINI_API_KEY
+from dreamvista_backend.config import GEMINI_API_KEY
 
 genai.configure(api_key=GEMINI_API_KEY)
 
