@@ -1,20 +1,24 @@
 from django.shortcuts import render
 from .gemini_api import interpret_dream
-from textblob import TextBlob
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+# Initialize VADER Sentiment Analyzer
+analyzer = SentimentIntensityAnalyzer()
 
 def analyze_sentiment(text):
-    """Determine sentiment polarity of the dream."""
-    blob = TextBlob(text)
-    polarity = blob.sentiment.polarity
+    """Determine sentiment polarity using VADER."""
+    scores = analyzer.polarity_scores(text)
+    polarity = scores['compound']  # Compound score represents overall sentiment
 
-    print(f"Sentiment Polarity: {polarity}")  # Debugging
+    print(f"VADER Sentiment Score: {polarity}")  # Debugging
 
-    if polarity > 0:
+    if polarity >= 0.05:
         return "Positive 😊"
-    elif polarity < 0:
+    elif polarity <= -0.05:
         return "Negative 😟"
     else:
         return "Neutral 😐"
+
 
 def categorize_dream(dream_text):
     """Categorize the dream into types."""
@@ -22,9 +26,18 @@ def categorize_dream(dream_text):
 
     print(f"Analyzing Dream Category for: {dream_text}")  # Debugging
 
-    nightmare_keywords = ["scary", "fear", "chased", "monster", "dark", "haunted", "death", "screaming"]
-    lucid_keywords = ["flying", "aware", "control", "lucid", "dream control", "awake in dream"]
-    symbolic_keywords = ["symbol", "mystery", "hidden message", "prophetic", "spiritual", "sign"]
+    nightmare_keywords = [
+        "scary", "fear", "chased", "monster", "dark", "haunted", "death", "screaming", 
+        "witch", "ghost", "demon", "attack", "murder", "kill", "shadow", "curse", "blood"
+    ]
+    lucid_keywords = [
+        "flying", "aware", "control", "lucid", "dream control", "awake in dream", "floating",
+        "controlling", "astral projection", "seeing yourself"
+    ]
+    symbolic_keywords = [
+        "symbol", "mystery", "hidden message", "prophetic", "spiritual", "sign", "premonition",
+        "fortune", "vision", "prediction"
+    ]
 
     if any(word in dream_text for word in nightmare_keywords):
         return "Nightmare 😱"
