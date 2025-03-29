@@ -1,6 +1,17 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "dreamvista_backend/wsgi.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "staticfiles/**/*",
+      "use": "@vercel/static"
+    }
+  ],
   "routes": [
-    { "src": "/(.*)", "dest": "wsgi.py" }
+    { "src": "/static/(.*)", "dest": "/staticfiles/$1" },
+    { "src": "/(.*)", "dest": "dreamvista_backend/wsgi.py" }
   ]
 }
