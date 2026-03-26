@@ -7,7 +7,7 @@ env/
 *.key
 *.secret
 *.env
-
+*.venv
 # Other common ignores
 *.pyc
 __pycache__/

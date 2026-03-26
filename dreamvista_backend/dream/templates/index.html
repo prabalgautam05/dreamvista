@@ -1,193 +1,621 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DreamVista - AI Dream Interpretation</title>
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-  />
-  <style>
-    /* Light Mode (default) */
-    body {
-      background-color: #f8f9fa;
-      transition: background-color 0.5s ease, color 0.5s ease;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DreamVista - AI Dream Interpretation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
 
-    /* Dark Mode Styles */
-    body.dark-mode {
-      background-color: #121212;
-      color: #ffffff;
-      /* Add background GIF */
-      background: url("https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExc3RwaTQ4bXM1NnM0aWs5Y2Nib2lidDN0cmkycDBtem1hMDEzMXBjZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l1Et7Qw1XjvunS0Io/giphy.gif")
-        no-repeat center center fixed;
-      background-size: cover;
-    }
-    /* Optional: Dark overlay for readability */
-    body.dark-mode::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.6);
-      z-index: -1;
-    }
-    .dark-mode .card {
-      background-color: #1e1e1e;
-      color: #ffffff;
-      border: 1px solid #444;
-    }
-    .dark-mode .text-dark {
-      color: #ffffff !important;
-    }
-    .dark-mode .text-muted {
-      color: #cccccc !important;
-    }
-    .dark-mode .btn-primary {
-      background-color: #ff9800;
-      border-color: #ff9800;
-    }
-    .dark-mode .btn-primary:hover {
-      background-color: #e68900;
-      border-color: #e68900;
-    }
-  </style>
-</head>
-<body class="bg-light">
-  <div class="container mt-5">
-    <!-- Dark Mode Toggle Button -->
-    <div class="text-end mb-3">
-      <button id="toggle-dark-mode" class="btn btn-dark">🌙 Dark Mode</button>
-    </div>
-
-    <h1
-      class="text-center text-warning"
-      style="color: orange; text-shadow: 0 0 5px orange, 0 0 10px orange, 0 0 20px orange, 0 0 30px orange, 0 0 40px orange; text-outline: 2px black;"
-    >
-      🌙 DreamVista - AI Dream Interpretation 🔮
-    </h1>
     <style>
-      body:not(.dark-mode) h1 {
-        -webkit-text-stroke: 1px black; /* Black outline for light mode */
+      :root {
+        --bg:            #f0edf8;
+        --bg2:           #e8e3f5;
+        --surface:       rgba(255, 255, 255, 0.72);
+        --surface-alt:   rgba(240, 235, 255, 0.6);
+        --border:        rgba(160, 130, 220, 0.25);
+        --border-glow:   rgba(160, 130, 220, 0.6);
+        --text:          #1a1030;
+        --text-muted:    #6b5b95;
+        --accent:        #7c3aed;
+        --accent2:       #c084fc;
+        --accent3:       #f59e0b;
+        --glow:          rgba(124, 58, 237, 0.15);
+        --card-shadow:   0 8px 32px rgba(80, 40, 160, 0.12), 0 2px 8px rgba(0,0,0,0.06);
+        --font-display:  'Cinzel Decorative', serif;
+        --font-body:     'Cormorant Garamond', serif;
+        --font-mono:     'DM Mono', monospace;
       }
+
+      body.dark-mode {
+        --bg:            #07050f;
+        --bg2:           #0e0a1c;
+        --surface:       rgba(20, 12, 40, 0.82);
+        --surface-alt:   rgba(30, 18, 56, 0.7);
+        --border:        rgba(130, 80, 220, 0.3);
+        --border-glow:   rgba(180, 120, 255, 0.5);
+        --text:          #ede8ff;
+        --text-muted:    #a992e0;
+        --accent:        #a855f7;
+        --accent2:       #e879f9;
+        --accent3:       #fbbf24;
+        --glow:          rgba(168, 85, 247, 0.2);
+        --card-shadow:   0 8px 40px rgba(120, 60, 240, 0.2), 0 2px 12px rgba(0,0,0,0.4);
+      }
+
+      /* ── BASE ── */
+      *, *::before, *::after { box-sizing: border-box; }
+
+      body {
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 17px;
+        line-height: 1.7;
+        min-height: 100vh;
+        transition: background-color 0.5s ease, color 0.4s ease;
+        position: relative;
+        overflow-x: hidden;
+      }
+
+      /* subtle star/noise layer */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+          radial-gradient(ellipse 80% 60% at 20% 0%, rgba(168,85,247,.08) 0%, transparent 60%),
+          radial-gradient(ellipse 60% 40% at 80% 100%, rgba(124,58,237,.06) 0%, transparent 55%);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      body.dark-mode::before {
+        background-image:
+          radial-gradient(ellipse 80% 60% at 20% 0%, rgba(168,85,247,.18) 0%, transparent 60%),
+          radial-gradient(ellipse 60% 40% at 80% 100%, rgba(232,121,249,.12) 0%, transparent 55%),
+          url("https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExc3RwaTQ4bXM1NnM0aWs5Y2Nib2lidDN0cmkycDBtem1hMDEzMXBjZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l1Et7Qw1XjvunS0Io/giphy.gif") center/cover fixed;
+        opacity: 1;
+      }
+      body.dark-mode::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: rgba(7, 3, 18, 0.72);
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      /* ── LAYOUT ── */
+      .dv-container {
+        max-width: 1140px;
+        margin: 0 auto;
+        padding: 2.5rem 1.5rem 4rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ── TOPBAR ── */
+      .dv-topbar {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 2rem;
+      }
+
+      /* ── HERO TITLE ── */
+      .dv-hero {
+        text-align: center;
+        margin-bottom: 2.8rem;
+      }
+      .dv-hero h1 {
+        font-family: var(--font-display);
+        font-size: clamp(1.5rem, 4vw, 2.6rem);
+        font-weight: 700;
+        color: var(--accent3);
+        text-shadow:
+          0 0 8px rgba(251,191,36,.5),
+          0 0 24px rgba(251,191,36,.3),
+          0 0 48px rgba(124,58,237,.2);
+        letter-spacing: 0.02em;
+        -webkit-text-stroke: 0.5px rgba(0,0,0,0.3);
+        line-height: 1.25;
+        margin: 0;
+      }
+      .dv-hero .dv-tagline {
+        font-family: var(--font-body);
+        font-style: italic;
+        color: var(--text-muted);
+        font-size: 1.05rem;
+        margin-top: 0.4rem;
+        letter-spacing: 0.04em;
+      }
+
+      /* ── GLASS CARD ── */
+      .dv-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 1.8rem 2rem;
+        box-shadow: var(--card-shadow);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .dv-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--border-glow), transparent);
+      }
+      .dv-card:hover {
+        box-shadow: var(--card-shadow), 0 0 0 1px var(--border-glow);
+        border-color: var(--border-glow);
+      }
+
+      .dv-card h4 {
+        font-family: var(--font-display);
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        color: var(--accent);
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      /* ── FORM ── */
+      .dv-form-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 2.2rem 2.4rem;
+        box-shadow: var(--card-shadow);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        margin-bottom: 2.5rem;
+        position: relative;
+      }
+      .dv-form-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        border-radius: 20px 20px 0 0;
+        background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+      }
+
+      .form-label {
+        font-family: var(--font-display);
+        font-size: 0.78rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.6rem;
+      }
+
+      textarea.form-control {
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 1rem;
+        padding: 1rem 1.2rem;
+        resize: vertical;
+        transition: border-color 0.25s, box-shadow 0.25s;
+      }
+      textarea.form-control::placeholder {
+        color: var(--text-muted);
+        font-style: italic;
+        opacity: 0.7;
+      }
+      textarea.form-control:focus {
+        background: var(--surface-alt);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--glow);
+        color: var(--text);
+        outline: none;
+      }
+
+      .btn-analyze {
+        background: linear-gradient(135deg, var(--accent), var(--accent2));
+        border: none;
+        border-radius: 12px;
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 0.8rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 0.85rem 2rem;
+        width: 100%;
+        cursor: pointer;
+        transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+        box-shadow: 0 4px 18px var(--glow);
+        margin-top: 0.8rem;
+      }
+      .btn-analyze:hover {
+        opacity: 0.92;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 28px var(--glow);
+      }
+      .btn-analyze:active { transform: translateY(0); }
+
+      /* ── TOGGLE BUTTON ── */
+      .btn-toggle {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 30px;
+        color: var(--text);
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        padding: 0.5rem 1.2rem;
+        cursor: pointer;
+        transition: all 0.25s;
+        backdrop-filter: blur(8px);
+        letter-spacing: 0.05em;
+      }
+      .btn-toggle:hover {
+        border-color: var(--border-glow);
+        box-shadow: 0 0 12px var(--glow);
+        color: var(--accent);
+      }
+
+      /* ── RESULTS GRID ── */
+      .dv-results-grid {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 1.5rem;
+        align-items: start;
+      }
+
+      @media (max-width: 900px) {
+        .dv-results-grid { grid-template-columns: 1fr; }
+      }
+
+      .dv-col-main    { display: flex; flex-direction: column; gap: 1.25rem; }
+      .dv-col-sidebar { display: flex; flex-direction: column; gap: 1.1rem; position: sticky; top: 1.5rem; }
+
+      /* ── DREAM TEXT ── */
+      .dream-text-content {
+        font-style: italic;
+        color: var(--text-muted);
+        font-size: 1rem;
+        line-height: 1.75;
+        border-left: 2px solid var(--border-glow);
+        padding-left: 1rem;
+        margin: 0;
+      }
+
+      /* ── PROGRESS BARS ── */
+      .progress {
+        background: var(--surface-alt);
+        border-radius: 99px;
+        height: 8px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .progress-bar {
+        border-radius: 99px;
+        background: linear-gradient(90deg, var(--accent), var(--accent2));
+        transition: width 1s cubic-bezier(.4,0,.2,1);
+      }
+      .progress-bar.bg-danger  { background: linear-gradient(90deg, #ef4444, #f87171); }
+      .progress-bar.bg-success { background: linear-gradient(90deg, #10b981, #6ee7b7); }
+      .progress-bar.bg-warning { background: linear-gradient(90deg, #f59e0b, #fcd34d); }
+      .progress-bar.bg-info    { background: linear-gradient(90deg, #06b6d4, #67e8f9); }
+
+      .sentiment-label {
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        color: var(--text-muted);
+        margin-top: 0.6rem;
+      }
+      .sentiment-label strong { color: var(--accent2); }
+
+      /* ── EMOTION ROWS ── */
+      .emo-row { margin-bottom: 0.9rem; }
+      .emo-row:last-child { margin-bottom: 0; }
+      .emo-label {
+        display: flex;
+        justify-content: space-between;
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        margin-bottom: 0.3rem;
+        letter-spacing: 0.04em;
+      }
+
+      /* ── SIMILAR DREAMS ── */
+      .similar-dream-item {
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.93rem;
+        color: var(--text-muted);
+        font-style: italic;
+        margin-bottom: 0.6rem;
+        transition: border-color 0.2s;
+      }
+      .similar-dream-item:last-child { margin-bottom: 0; }
+      .similar-dream-item:hover { border-color: var(--accent); }
+
+      /* ── BADGE ── */
+      .dv-badge {
+        display: inline-block;
+        font-family: var(--font-display);
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.35rem 0.9rem;
+        border-radius: 99px;
+        font-weight: 700;
+      }
+      .dv-badge-nightmare  { background: rgba(239,68,68,.15);  color: #f87171;  border: 1px solid rgba(239,68,68,.3);  }
+      .dv-badge-lucid      { background: rgba(99,102,241,.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,.3); }
+      .dv-badge-symbolic   { background: rgba(245,158,11,.15); color: #fcd34d; border: 1px solid rgba(245,158,11,.3); }
+      .dv-badge-default    { background: rgba(148,163,184,.15); color: #94a3b8; border: 1px solid rgba(148,163,184,.3); }
+
+      /* symbol pills */
+      .symbol-pill {
+        display: inline-block;
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        color: var(--accent2);
+        font-family: var(--font-mono);
+        font-size: 0.76rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 99px;
+        margin: 0.2rem 0.2rem 0.2rem 0;
+        transition: background 0.2s, border-color 0.2s;
+      }
+      .symbol-pill:hover {
+        background: var(--glow);
+        border-color: var(--accent);
+      }
+
+      /* symbol insight rows */
+      .insight-row {
+        border-bottom: 1px solid var(--border);
+        padding: 0.6rem 0;
+        font-size: 0.95rem;
+      }
+      .insight-row:last-child { border-bottom: none; }
+      .insight-row strong {
+        color: var(--accent2);
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+      }
+
+      /* ── AI INTERPRETATION ── */
+      .ai-text {
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.85;
+        color: var(--text);
+        white-space: pre-wrap;
+      }
+
+      /* ── ALERT ── */
+      .dv-alert {
+        background: rgba(239,68,68,.1);
+        border: 1px solid rgba(239,68,68,.3);
+        color: #f87171;
+        border-radius: 12px;
+        padding: 1rem 1.4rem;
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      /* ── DIVIDER ORNAMENT ── */
+      .dv-ornament {
+        text-align: center;
+        color: var(--border-glow);
+        font-size: 1rem;
+        letter-spacing: 0.5rem;
+        margin: 0.5rem 0;
+        opacity: 0.6;
+      }
+
+      /* ── SCROLLBAR ── */
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border-glow);
+        border-radius: 99px;
+      }
+
+      /* fade-in on load */
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(18px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+      .dv-hero        { animation: fadeUp 0.7s ease both; }
+      .dv-form-card   { animation: fadeUp 0.7s 0.1s ease both; }
+      .dv-results-grid { animation: fadeUp 0.7s 0.2s ease both; }
     </style>
+  </head>
 
-    <div class="card shadow-lg p-4 mt-4">
-      <form method="POST">
-        {% csrf_token %}
-        <div class="mb-3">
-          <label for="dream_text" class="form-label">Describe your dream:</label>
-          <textarea
-            name="dream_text"
-            id="dream_text"
-            class="form-control"
-            rows="4"
-            required
-            placeholder="Start writing your dream with (In my dream/ I had a dream/ I saw a Nightmare...)"
-          ></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Analyze Dream</button>
-      </form>
-    </div>
+  <body>
+    <div class="dv-container">
 
-    {% if error %}
-      <div class="alert alert-danger mt-4 text-center">
-        {{ error }}
+      <!-- TOP BAR -->
+      <div class="dv-topbar">
+        <button id="toggle-dark-mode" class="btn-toggle">🌙 Dark Mode</button>
       </div>
-    {% endif %}
 
-    {% if interpretation %}
-      <div class="row mt-4">
-        <!-- Left Column -->
-        <div class="col-md-6">
-          <!-- Dream Text Card -->
-          <div class="card shadow p-3 mb-3">
-            <h4 class="text-dark">🌙 Your Dream</h4>
-            <p class="text-muted">{{ dream_text }}</p>
+      <!-- HERO -->
+      <div class="dv-hero">
+        <h1>🌙 DreamVista 🔮</h1>
+        <p class="dv-tagline">AI-powered interpretation of your subconscious</p>
+      </div>
+
+      <!-- FORM -->
+      <div class="dv-form-card">
+        <form method="POST">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="dream_text" class="form-label">Describe your dream</label>
+            <textarea
+              name="dream_text"
+              id="dream_text"
+              class="form-control"
+              rows="4"
+              required
+              placeholder="In my dream… / I had a dream… / I saw a nightmare…"></textarea>
+          </div>
+          <button type="submit" class="btn-analyze">✦ Analyze Dream ✦</button>
+        </form>
+      </div>
+
+      <!-- ERROR -->
+      {% if error %}
+      <div class="dv-alert">{{ error }}</div>
+      {% endif %}
+
+      <!-- RESULTS -->
+      {% if interpretation %}
+      <div class="dv-results-grid">
+
+        <!-- MAIN COLUMN -->
+        <div class="dv-col-main">
+
+          <!-- Your Dream -->
+          <div class="dv-card">
+            <h4>🌙 Your Dream</h4>
+            <p class="dream-text-content">{{ dream_text }}</p>
           </div>
 
-          <!-- Sentiment Analysis Card -->
-          <div class="card shadow p-3 mb-3">
-            <h4 class="text-dark">📊 Sentiment Analysis</h4>
+          <!-- AI Interpretation -->
+          <div class="dv-card">
+            <h4>🤖 AI Interpretation</h4>
+            <div class="ai-text">{{ interpretation | safe }}</div>
+          </div>
+
+          <!-- Similar Dreams -->
+          <div class="dv-card">
+            <h4>🧬 Similar Dreams</h4>
+            {% if similar_dreams %}
+              {% for dream in similar_dreams %}
+              <div class="similar-dream-item">{{ dream }}</div>
+              {% endfor %}
+            {% else %}
+              <p style="color: var(--text-muted); font-style: italic; font-size:0.93rem; margin:0;">No similar dreams found yet.</p>
+            {% endif %}
+          </div>
+
+        </div><!-- /col-main -->
+
+        <!-- SIDEBAR -->
+        <div class="dv-col-sidebar">
+
+          <!-- Sentiment -->
+          <div class="dv-card">
+            <h4>📊 Sentiment</h4>
             <div class="progress">
-              <div
-                class="progress-bar 
-                    {% if sentiment == 'Positive 😊' %} bg-success
-                    {% elif sentiment == 'Negative 😟' %} bg-danger
-                    {% else %} bg-secondary
-                    {% endif %}"
-                role="progressbar"
-                style="width: {{ sentiment_score }}%;"
-              ></div>
+              <div class="progress-bar {{ sentiment_class }}" role="progressbar" style="width: {{ sentiment_score }}%;"></div>
             </div>
-            <p class="mt-2"><strong>Sentiment:</strong> {{ sentiment }}</p>
+            <p class="sentiment-label"><strong>{{ sentiment }}</strong></p>
           </div>
 
-          <!-- Dream Category Card -->
-          <div class="card shadow p-3">
-            <h4 class="text-dark">📂 Dream Category</h4>
-            <p>
-              <span
-                class="badge 
-                    {% if category == 'Nightmare 😱' %} bg-dark
-                    {% elif category == 'Lucid Dream ✨' %} bg-primary
-                    {% elif category == 'Symbolic Dream 🔮' %} bg-warning
-                    {% else %} bg-secondary
-                    {% endif %}"
-              >
-                {{ category }}
-              </span>
-            </p>
+          <!-- Emotions -->
+          <div class="dv-card">
+            <h4>🧠 Emotions</h4>
+            {% for emo in emotions %}
+            <div class="emo-row">
+              <div class="emo-label">
+                <span>{{ emo.label|title }}</span>
+                <span>{{ emo.score|floatformat:2 }}</span>
+              </div>
+              <div class="progress">
+                <div class="progress-bar bg-info" style="width: {{ emo.score|floatformat:2 }}00%;"></div>
+              </div>
+            </div>
+            {% endfor %}
           </div>
-        </div>
 
-        <!-- Right Column -->
-        <div class="col-md-6">
-          <!-- AI Interpretation Card -->
-<div class="card shadow p-3">
-    <h4 class="text-dark">🤖 AI Interpretation</h4>
-    <div class="text-info" style="white-space: pre-wrap; font-family: Arial, sans-serif;">
-        {{ interpretation | safe }}
-    </div>
-</div>
+          <!-- Category -->
+          <div class="dv-card">
+            <h4>📂 Category</h4>
+            <span class="dv-badge
+              {% if category == 'Nightmare 😱' %} dv-badge-nightmare
+              {% elif category == 'Lucid Dream ✨' %} dv-badge-lucid
+              {% elif category == 'Symbolic Dream 🔮' %} dv-badge-symbolic
+              {% else %} dv-badge-default {% endif %}">
+              {{ category }}
+            </span>
+          </div>
 
-        </div>
-      </div>
-    {% endif %}
-  </div>
+          <!-- Dream Symbols -->
+          <div class="dv-card">
+            <h4>🔮 Symbols</h4>
+            <div>
+              {% for symbol in symbols %}
+              <span class="symbol-pill">{{ symbol }}</span>
+              {% endfor %}
+            </div>
+          </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const toggleButton = document.getElementById("toggle-dark-mode");
-      const body = document.body;
+          <!-- Symbol Insights -->
+          <div class="dv-card">
+            <h4>🔍 Symbol Insights</h4>
+            {% for symbol, meaning in symbol_details.items %}
+            <div class="insight-row">
+              <strong>{{ symbol|title }}</strong>
+              <p style="margin: 0.25rem 0 0; font-size:0.93rem; color:var(--text-muted);">{{ meaning }}</p>
+            </div>
+            {% endfor %}
+          </div>
 
-      // Load user preference
-      if (localStorage.getItem("darkMode") === "enabled") {
-        body.classList.add("dark-mode");
-        toggleButton.textContent = "☀️ Light Mode";
-        toggleButton.classList.replace("btn-dark", "btn-light");
-      }
+        </div><!-- /col-sidebar -->
 
-      // Toggle function
-      toggleButton.addEventListener("click", function () {
-        body.classList.toggle("dark-mode");
+      </div><!-- /dv-results-grid -->
+      {% endif %}
 
-        if (body.classList.contains("dark-mode")) {
-          localStorage.setItem("darkMode", "enabled");
+    </div><!-- /dv-container -->
+
+    <!-- SCRIPTS -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggleButton = document.getElementById("toggle-dark-mode");
+        const body = document.body;
+
+        if (localStorage.getItem("darkMode") === "enabled") {
+          body.classList.add("dark-mode");
           toggleButton.textContent = "☀️ Light Mode";
-          toggleButton.classList.replace("btn-dark", "btn-light");
-        } else {
-          localStorage.setItem("darkMode", "disabled");
-          toggleButton.textContent = "🌙 Dark Mode";
-          toggleButton.classList.replace("btn-light", "btn-dark");
+        }
+
+        toggleButton.addEventListener("click", function () {
+          body.classList.toggle("dark-mode");
+          if (body.classList.contains("dark-mode")) {
+            localStorage.setItem("darkMode", "enabled");
+            toggleButton.textContent = "☀️ Light Mode";
+          } else {
+            localStorage.setItem("darkMode", "disabled");
+            toggleButton.textContent = "🌙 Dark Mode";
+          }
+        });
+      });
+    </script>
+
+    <script>
+      window.addEventListener("pageshow", function (event) {
+        if (event.persisted || performance.getEntriesByType("navigation")[0].type === "reload") {
+          window.location.href = window.location.pathname;
         }
       });
-    });
-  </script>
+    </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
 </html>
