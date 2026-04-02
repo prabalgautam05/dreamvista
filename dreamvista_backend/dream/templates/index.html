@@ -435,6 +435,123 @@
         border-radius: 99px;
       }
 
+      /* ── SAMPLE DREAMS ── */
+      .dv-samples-toggle {
+        background: none;
+        border: 1px dashed var(--border-glow);
+        border-radius: 10px;
+        color: var(--text-muted);
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        letter-spacing: 0.06em;
+        padding: 0.55rem 1.1rem;
+        cursor: pointer;
+        transition: all 0.25s;
+        width: 100%;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+      .dv-samples-toggle:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--glow);
+      }
+      .dv-samples-toggle .arrow {
+        display: inline-block;
+        transition: transform 0.3s ease;
+        font-style: normal;
+      }
+      .dv-samples-toggle.open .arrow { transform: rotate(180deg); }
+
+      .dv-samples-panel {
+        display: none;
+        margin-top: 1rem;
+        gap: 0.75rem;
+        flex-direction: column;
+      }
+      .dv-samples-panel.open { display: flex; }
+
+      .dv-sample-card {
+        background: var(--surface-alt);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 0.85rem 1.1rem;
+        cursor: pointer;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        position: relative;
+        overflow: hidden;
+      }
+      .dv-sample-card::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 3px;
+        background: linear-gradient(180deg, var(--accent), var(--accent2));
+        border-radius: 3px 0 0 3px;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .dv-sample-card:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 14px var(--glow);
+        background: var(--surface);
+      }
+      .dv-sample-card:hover::before { opacity: 1; }
+
+      .dv-sample-label {
+        font-family: var(--font-display);
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--accent2);
+        margin-bottom: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .dv-sample-preview {
+        font-family: var(--font-body);
+        font-style: italic;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        line-height: 1.55;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .dv-sample-hint {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        color: var(--accent);
+        margin-top: 0.4rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .dv-sample-card:hover .dv-sample-hint { opacity: 1; }
+
+      .dv-samples-separator {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 1rem 0 0.25rem;
+        color: var(--text-muted);
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+      }
+      .dv-samples-separator::before,
+      .dv-samples-separator::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: var(--border);
+      }
+
       /* fade-in on load */
       @keyframes fadeUp {
         from { opacity: 0; transform: translateY(18px); }
@@ -474,6 +591,52 @@
               required
               placeholder="In my dream… / I had a dream… / I saw a nightmare…"></textarea>
           </div>
+          <!-- SAMPLE DREAMS -->
+          <div class="dv-samples-separator">✦ or try a sample dream ✦</div>
+          <button type="button" class="dv-samples-toggle" id="samples-toggle">
+            <span>🌙 Don't have a dream? Try one of these</span>
+            <span class="arrow">▾</span>
+          </button>
+          <div class="dv-samples-panel" id="samples-panel">
+
+            <div class="dv-sample-card" data-dream="In my dream, I was walking through a library that had no ceiling — just endless shelves spiraling up into a starlit sky. Every book I pulled from the shelf had my name on it, but when I opened them, the pages were blank. A soft voice behind me whispered, 'You haven't lived those chapters yet.' When I turned around, no one was there — only a door that hadn't existed a moment ago.">
+              <div class="dv-sample-label">📚 In my dream — The Infinite Library</div>
+              <p class="dv-sample-preview">I was walking through a library that had no ceiling — just endless shelves spiraling up into a starlit sky. Every book had my name on it, but the pages were blank...</p>
+              <div class="dv-sample-hint">↑ Click to use this dream</div>
+            </div>
+
+            <div class="dv-sample-card" data-dream="I had a dream that I could fly, but only just above the ground — barely a foot off the earth. I soared over golden fields and sleepy towns, skimming rooftops and grazing flower tops with my fingertips. People below looked up and smiled as if they'd been waiting for me. The wind smelled like rain and something warm, like cinnamon. I never wanted to land.">
+              <div class="dv-sample-label">🕊️ I had a dream — Low Flight</div>
+              <p class="dv-sample-preview">I could fly, but only just above the ground — barely a foot off the earth. I soared over golden fields and sleepy towns, skimming rooftops with my fingertips...</p>
+              <div class="dv-sample-hint">↑ Click to use this dream</div>
+            </div>
+
+            <div class="dv-sample-card" data-dream="I saw a nightmare where I was late for something impossibly important — an exam, a flight, a wedding — but I couldn't remember which. Every clock I found had melting hands. Every door I opened led to another hallway. My legs felt like they were wading through thick water. I kept dialing a number on my phone, but the digits rearranged themselves every time I looked. I woke up at 3 AM, heart racing, reaching for my phone just to make sure it still worked.">
+              <div class="dv-sample-label">😱 I saw a nightmare — Melting Clocks</div>
+              <p class="dv-sample-preview">I was late for something impossibly important but couldn't remember what. Every clock had melting hands. Every door led to another hallway. My legs felt like thick water...</p>
+              <div class="dv-sample-hint">↑ Click to use this dream</div>
+            </div>
+
+            <div class="dv-sample-card" data-dream="In my dream, the ocean was above me. I stood on a dry seabed, looking up at waves crashing in slow motion against an invisible ceiling of sky. Fish swam overhead like clouds. A lighthouse stood beside me, its beam cutting upward into the water, guiding something enormous and unseen toward the surface. I wasn't afraid — I was impossibly calm.">
+              <div class="dv-sample-label">🌊 In my dream — Upside-Down Ocean</div>
+              <p class="dv-sample-preview">The ocean was above me. I stood on a dry seabed looking up at waves crashing in slow motion. Fish swam overhead like clouds. A lighthouse guided something unseen...</p>
+              <div class="dv-sample-hint">↑ Click to use this dream</div>
+            </div>
+
+            <div class="dv-sample-card" data-dream="I had a dream that my childhood home had a room I'd never noticed before. It was behind the bookshelf in the hallway — warm and amber-lit, filled with toys I'd forgotten I ever owned. A younger version of me sat in the corner, playing quietly. They looked up, smiled, and said, 'I kept all of this safe for you.' I sat down beside them and we stayed there until morning.">
+              <div class="dv-sample-label">🏠 I had a dream — The Hidden Room</div>
+              <p class="dv-sample-preview">My childhood home had a room I'd never noticed before — behind the bookshelf, warm and amber-lit. A younger version of me sat in the corner and said, 'I kept all of this safe for you.'</p>
+              <div class="dv-sample-hint">↑ Click to use this dream</div>
+            </div>
+
+            <div class="dv-sample-card" data-dream="I saw a nightmare where every mirror in the house showed a different version of me — one older, one made of shadow, one that simply wasn't there at all. No matter where I moved, they wouldn't follow. They stood still, staring back at the spot where I used to be. The last mirror I looked into showed the room behind me — completely empty, as if I'd already left.">
+              <div class="dv-sample-label">🪞 I saw a nightmare — The Wrong Mirrors</div>
+              <p class="dv-sample-preview">Every mirror showed a different version of me — one older, one made of shadow, one not there at all. They wouldn't follow when I moved. They stared back at where I used to be...</p>
+              <div class="dv-sample-hint">↑ Click to use this dream</div>
+            </div>
+
+          </div><!-- /samples-panel -->
+
           <button type="submit" class="btn-analyze">✦ Analyze Dream ✦</button>
         </form>
       </div>
@@ -609,7 +772,35 @@
     </script>
 
     <script>
-      window.addEventListener("pageshow", function (event) {
+      // Sample Dreams
+      const samplesToggle = document.getElementById("samples-toggle");
+      const samplesPanel  = document.getElementById("samples-panel");
+
+      samplesToggle.addEventListener("click", function () {
+        const isOpen = samplesPanel.classList.contains("open");
+        samplesPanel.classList.toggle("open", !isOpen);
+        samplesToggle.classList.toggle("open", !isOpen);
+      });
+
+      document.querySelectorAll(".dv-sample-card").forEach(function (card) {
+        card.addEventListener("click", function () {
+          const dream = card.getAttribute("data-dream");
+          document.getElementById("dream_text").value = dream;
+          // scroll smoothly to the textarea
+          document.getElementById("dream_text").scrollIntoView({ behavior: "smooth", block: "center" });
+          // close the panel
+          samplesPanel.classList.remove("open");
+          samplesToggle.classList.remove("open");
+          // brief highlight on textarea
+          const ta = document.getElementById("dream_text");
+          ta.style.borderColor = "var(--accent)";
+          ta.style.boxShadow = "0 0 0 3px var(--glow)";
+          setTimeout(() => { ta.style.borderColor = ""; ta.style.boxShadow = ""; }, 1200);
+        });
+      });
+    </script>
+
+    <script>
         if (event.persisted || performance.getEntriesByType("navigation")[0].type === "reload") {
           window.location.href = window.location.pathname;
         }
