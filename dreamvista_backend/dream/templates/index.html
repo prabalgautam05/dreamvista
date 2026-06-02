@@ -6,8 +6,11 @@
     <title>DreamVista - AI Dream Interpretation</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap"
+      rel="stylesheet" />
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
 
     <style>
       :root {
@@ -560,6 +563,38 @@
       .dv-hero        { animation: fadeUp 0.7s ease both; }
       .dv-form-card   { animation: fadeUp 0.7s 0.1s ease both; }
       .dv-results-grid { animation: fadeUp 0.7s 0.2s ease both; }
+
+      /* ── LOADING OVERLAY ── */
+      #loading-overlay {
+        position: fixed;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        background: rgba(8,6,18,0.6);
+        z-index: 9999;
+        backdrop-filter: blur(4px);
+      }
+      #loading-overlay .loading-box {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 0.9rem 1.2rem;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.04);
+        box-shadow: 0 6px 28px rgba(10,8,20,0.6);
+        color: #fff;
+        font-family: var(--font-body);
+      }
+      #loading-overlay .spinner {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 4px solid rgba(255,255,255,0.12);
+        border-top-color: var(--accent2);
+        animation: dv-spin 0.9s linear infinite;
+      }
+      @keyframes dv-spin { to { transform: rotate(360deg); } }
     </style>
   </head>
 
@@ -579,17 +614,18 @@
 
       <!-- FORM -->
       <div class="dv-form-card">
-        <form method="POST">
+        <form method="POST" id="dream-form">
           {% csrf_token %}
           <div class="mb-3">
-            <label for="dream_text" class="form-label">Describe your dream</label>
+            <label for="dream_text" class="form-label">Describe your
+              dream</label>
             <textarea
               name="dream_text"
               id="dream_text"
               class="form-control"
               rows="4"
               required
-              placeholder="In my dream… / I had a dream… / I saw a nightmare…"></textarea>
+              placeholder="In my dream… / I had a dream… / I saw a nightmare…">{{ dream_text|default_if_none:"" }}</textarea>
           </div>
           <!-- SAMPLE DREAMS -->
           <div class="dv-samples-separator">✦ or try a sample dream ✦</div>
@@ -599,45 +635,75 @@
           </button>
           <div class="dv-samples-panel" id="samples-panel">
 
-            <div class="dv-sample-card" data-dream="In my dream, I was walking through a library that had no ceiling — just endless shelves spiraling up into a starlit sky. Every book I pulled from the shelf had my name on it, but when I opened them, the pages were blank. A soft voice behind me whispered, 'You haven't lived those chapters yet.' When I turned around, no one was there — only a door that hadn't existed a moment ago.">
-              <div class="dv-sample-label">📚 In my dream — The Infinite Library</div>
-              <p class="dv-sample-preview">I was walking through a library that had no ceiling — just endless shelves spiraling up into a starlit sky. Every book had my name on it, but the pages were blank...</p>
+            <div class="dv-sample-card"
+              data-dream="In my dream, I was walking through a library that had no ceiling — just endless shelves spiraling up into a starlit sky. Every book I pulled from the shelf had my name on it, but when I opened them, the pages were blank. A soft voice behind me whispered, 'You haven't lived those chapters yet.' When I turned around, no one was there — only a door that hadn't existed a moment ago.">
+              <div class="dv-sample-label">📚 In my dream — The Infinite
+                Library</div>
+              <p class="dv-sample-preview">I was walking through a library that
+                had no ceiling — just endless shelves spiraling up into a
+                starlit sky. Every book had my name on it, but the pages were
+                blank...</p>
               <div class="dv-sample-hint">↑ Click to use this dream</div>
             </div>
 
-            <div class="dv-sample-card" data-dream="I had a dream that I could fly, but only just above the ground — barely a foot off the earth. I soared over golden fields and sleepy towns, skimming rooftops and grazing flower tops with my fingertips. People below looked up and smiled as if they'd been waiting for me. The wind smelled like rain and something warm, like cinnamon. I never wanted to land.">
+            <div class="dv-sample-card"
+              data-dream="I had a dream that I could fly, but only just above the ground — barely a foot off the earth. I soared over golden fields and sleepy towns, skimming rooftops and grazing flower tops with my fingertips. People below looked up and smiled as if they'd been waiting for me. The wind smelled like rain and something warm, like cinnamon. I never wanted to land.">
               <div class="dv-sample-label">🕊️ I had a dream — Low Flight</div>
-              <p class="dv-sample-preview">I could fly, but only just above the ground — barely a foot off the earth. I soared over golden fields and sleepy towns, skimming rooftops with my fingertips...</p>
+              <p class="dv-sample-preview">I could fly, but only just above the
+                ground — barely a foot off the earth. I soared over golden
+                fields and sleepy towns, skimming rooftops with my
+                fingertips...</p>
               <div class="dv-sample-hint">↑ Click to use this dream</div>
             </div>
 
-            <div class="dv-sample-card" data-dream="I saw a nightmare where I was late for something impossibly important — an exam, a flight, a wedding — but I couldn't remember which. Every clock I found had melting hands. Every door I opened led to another hallway. My legs felt like they were wading through thick water. I kept dialing a number on my phone, but the digits rearranged themselves every time I looked. I woke up at 3 AM, heart racing, reaching for my phone just to make sure it still worked.">
-              <div class="dv-sample-label">😱 I saw a nightmare — Melting Clocks</div>
-              <p class="dv-sample-preview">I was late for something impossibly important but couldn't remember what. Every clock had melting hands. Every door led to another hallway. My legs felt like thick water...</p>
+            <div class="dv-sample-card"
+              data-dream="I saw a nightmare where I was late for something impossibly important — an exam, a flight, a wedding — but I couldn't remember which. Every clock I found had melting hands. Every door I opened led to another hallway. My legs felt like they were wading through thick water. I kept dialing a number on my phone, but the digits rearranged themselves every time I looked. I woke up at 3 AM, heart racing, reaching for my phone just to make sure it still worked.">
+              <div class="dv-sample-label">😱 I saw a nightmare — Melting
+                Clocks</div>
+              <p class="dv-sample-preview">I was late for something impossibly
+                important but couldn't remember what. Every clock had melting
+                hands. Every door led to another hallway. My legs felt like
+                thick water...</p>
               <div class="dv-sample-hint">↑ Click to use this dream</div>
             </div>
 
-            <div class="dv-sample-card" data-dream="In my dream, the ocean was above me. I stood on a dry seabed, looking up at waves crashing in slow motion against an invisible ceiling of sky. Fish swam overhead like clouds. A lighthouse stood beside me, its beam cutting upward into the water, guiding something enormous and unseen toward the surface. I wasn't afraid — I was impossibly calm.">
-              <div class="dv-sample-label">🌊 In my dream — Upside-Down Ocean</div>
-              <p class="dv-sample-preview">The ocean was above me. I stood on a dry seabed looking up at waves crashing in slow motion. Fish swam overhead like clouds. A lighthouse guided something unseen...</p>
+            <div class="dv-sample-card"
+              data-dream="In my dream, the ocean was above me. I stood on a dry seabed, looking up at waves crashing in slow motion against an invisible ceiling of sky. Fish swam overhead like clouds. A lighthouse stood beside me, its beam cutting upward into the water, guiding something enormous and unseen toward the surface. I wasn't afraid — I was impossibly calm.">
+              <div class="dv-sample-label">🌊 In my dream — Upside-Down
+                Ocean</div>
+              <p class="dv-sample-preview">The ocean was above me. I stood on a
+                dry seabed looking up at waves crashing in slow motion. Fish
+                swam overhead like clouds. A lighthouse guided something
+                unseen...</p>
               <div class="dv-sample-hint">↑ Click to use this dream</div>
             </div>
 
-            <div class="dv-sample-card" data-dream="I had a dream that my childhood home had a room I'd never noticed before. It was behind the bookshelf in the hallway — warm and amber-lit, filled with toys I'd forgotten I ever owned. A younger version of me sat in the corner, playing quietly. They looked up, smiled, and said, 'I kept all of this safe for you.' I sat down beside them and we stayed there until morning.">
-              <div class="dv-sample-label">🏠 I had a dream — The Hidden Room</div>
-              <p class="dv-sample-preview">My childhood home had a room I'd never noticed before — behind the bookshelf, warm and amber-lit. A younger version of me sat in the corner and said, 'I kept all of this safe for you.'</p>
+            <div class="dv-sample-card"
+              data-dream="I had a dream that my childhood home had a room I'd never noticed before. It was behind the bookshelf in the hallway — warm and amber-lit, filled with toys I'd forgotten I ever owned. A younger version of me sat in the corner, playing quietly. They looked up, smiled, and said, 'I kept all of this safe for you.' I sat down beside them and we stayed there until morning.">
+              <div class="dv-sample-label">🏠 I had a dream — The Hidden
+                Room</div>
+              <p class="dv-sample-preview">My childhood home had a room I'd
+                never noticed before — behind the bookshelf, warm and amber-lit.
+                A younger version of me sat in the corner and said,
+                'I kept all of this safe for you.'</p>
               <div class="dv-sample-hint">↑ Click to use this dream</div>
             </div>
 
-            <div class="dv-sample-card" data-dream="I saw a nightmare where every mirror in the house showed a different version of me — one older, one made of shadow, one that simply wasn't there at all. No matter where I moved, they wouldn't follow. They stood still, staring back at the spot where I used to be. The last mirror I looked into showed the room behind me — completely empty, as if I'd already left.">
-              <div class="dv-sample-label">🪞 I saw a nightmare — The Wrong Mirrors</div>
-              <p class="dv-sample-preview">Every mirror showed a different version of me — one older, one made of shadow, one not there at all. They wouldn't follow when I moved. They stared back at where I used to be...</p>
+            <div class="dv-sample-card"
+              data-dream="I saw a nightmare where every mirror in the house showed a different version of me — one older, one made of shadow, one that simply wasn't there at all. No matter where I moved, they wouldn't follow. They stood still, staring back at the spot where I used to be. The last mirror I looked into showed the room behind me — completely empty, as if I'd already left.">
+              <div class="dv-sample-label">🪞 I saw a nightmare — The Wrong
+                Mirrors</div>
+              <p class="dv-sample-preview">Every mirror showed a different
+                version of me — one older, one made of shadow, one not there at
+                all. They wouldn't follow when I moved. They stared back at
+                where I used to be...</p>
               <div class="dv-sample-hint">↑ Click to use this dream</div>
             </div>
 
           </div><!-- /samples-panel -->
 
-          <button type="submit" class="btn-analyze">✦ Analyze Dream ✦</button>
+          <button type="submit" class="btn-analyze" id="analyze-btn">✦ Analyze
+            Dream ✦</button>
         </form>
       </div>
 
@@ -669,11 +735,13 @@
           <div class="dv-card">
             <h4>🧬 Similar Dreams</h4>
             {% if similar_dreams %}
-              {% for dream in similar_dreams %}
-              <div class="similar-dream-item">{{ dream }}</div>
-              {% endfor %}
+            {% for dream in similar_dreams %}
+            <div class="similar-dream-item">{{ dream }}</div>
+            {% endfor %}
             {% else %}
-              <p style="color: var(--text-muted); font-style: italic; font-size:0.93rem; margin:0;">No similar dreams found yet.</p>
+            <p
+              style="color: var(--text-muted); font-style: italic; font-size:0.93rem; margin:0;">No
+              similar dreams found yet.</p>
             {% endif %}
           </div>
 
@@ -686,7 +754,8 @@
           <div class="dv-card">
             <h4>📊 Sentiment</h4>
             <div class="progress">
-              <div class="progress-bar {{ sentiment_class }}" role="progressbar" style="width: {{ sentiment_score }}%;"></div>
+              <div class="progress-bar {{ sentiment_class }}" role="progressbar"
+                style="width: {{ sentiment_score }}%;"></div>
             </div>
             <p class="sentiment-label"><strong>{{ sentiment }}</strong></p>
           </div>
@@ -701,7 +770,8 @@
                 <span>{{ emo.score|floatformat:2 }}</span>
               </div>
               <div class="progress">
-                <div class="progress-bar bg-info" style="width: {{ emo.score|floatformat:2 }}00%;"></div>
+                <div class="progress-bar bg-info"
+                  style="width: {{ emo.score|floatformat:2 }}00%;"></div>
               </div>
             </div>
             {% endfor %}
@@ -735,7 +805,9 @@
             {% for symbol, meaning in symbol_details.items %}
             <div class="insight-row">
               <strong>{{ symbol|title }}</strong>
-              <p style="margin: 0.25rem 0 0; font-size:0.93rem; color:var(--text-muted);">{{ meaning }}</p>
+              <p
+                style="margin: 0.25rem 0 0; font-size:0.93rem; color:var(--text-muted);">{{
+                meaning }}</p>
             </div>
             {% endfor %}
           </div>
@@ -746,6 +818,14 @@
       {% endif %}
 
     </div><!-- /dv-container -->
+
+    <!-- Loading overlay -->
+    <div id="loading-overlay" aria-hidden="true">
+      <div class="loading-box">
+        <div class="spinner" aria-hidden="true"></div>
+        <div class="loading-text">Analyzing… this may take a few seconds</div>
+      </div>
+    </div>
 
     <!-- SCRIPTS -->
     <script>
@@ -769,6 +849,41 @@
           }
         });
       });
+    </script>
+
+    <script>
+      // Disable submit, show overlay and prevent double-submit
+      (function(){
+        const form = document.getElementById('dream-form');
+        const btn = document.getElementById('analyze-btn');
+        const overlay = document.getElementById('loading-overlay');
+        if (!form || !btn) return;
+
+        form.addEventListener('submit', function (e) {
+          // Prevent double submission
+          if (btn.dataset.disabled === 'true') {
+            e.preventDefault();
+            return;
+          }
+
+          btn.dataset.disabled = 'true';
+          btn.style.pointerEvents = 'none';
+          btn.style.opacity = '0.7';
+          const original = btn.innerHTML;
+          btn.innerHTML = 'Processing...';
+
+          if (overlay) overlay.style.display = 'flex';
+
+          // In case the request fails silently, re-enable after 25s
+          setTimeout(() => {
+            btn.dataset.disabled = 'false';
+            btn.style.pointerEvents = '';
+            btn.style.opacity = '';
+            btn.innerHTML = original;
+            if (overlay) overlay.style.display = 'none';
+          }, 25000);
+        });
+      })();
     </script>
 
     <script>
@@ -801,12 +916,16 @@
     </script>
 
     <script>
-        if (event.persisted || performance.getEntriesByType("navigation")[0].type === "reload") {
+      try {
+        if (performance.getEntriesByType("navigation")[0].type === "reload") {
           window.location.href = window.location.pathname;
         }
-      });
+      } catch (e) {
+        // ignore
+      }
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>

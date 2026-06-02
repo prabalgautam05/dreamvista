@@ -1,5 +1,5 @@
 from groq import Groq
-from dreamvista_backend.config import GROQ_API_KEY
+from config import GROQ_API_KEY
 
 client = Groq(api_key=GROQ_API_KEY)
 

@@ -42,6 +42,7 @@ def map_emotion_to_ui(emotion):
     else:
         return "Neutral 😐", 60, "bg-secondary"
 
+
 def extract_structured_interpretation(text):
     sections = {
         "Main Interpretation": "",
@@ -72,7 +73,12 @@ def extract_structured_interpretation(text):
             formatted_output += f"<br><b>{title}</b><br>"
             formatted_output += f"{content.strip()}<br>"
 
-    return formatted_output
+    if formatted_output.strip():
+        return formatted_output
+
+    # If the LLM output does not match the expected headings,
+    # return raw interpretation so the user still sees the result.
+    return text.strip()
 
 
 def index(request):
